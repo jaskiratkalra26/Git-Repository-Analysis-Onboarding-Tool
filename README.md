@@ -122,24 +122,24 @@ python test_pipeline.py
 GIT-repo-analyzer-extension/
 
 ├── main.py                         # Application entry point
-
-├── services/
+│
+├── services/                       # Core services
 │   ├── orchestrator_service.py     # Pipeline coordinator
 │   ├── github_service.py           # GitHub API integration
 │   ├── analysis_service.py         # Code analysis management
 │   ├── ai_service.py               # AI integration
 │   └── ...
-
+│
 ├── cloned_repos/                   # Cloned repositories (ignored by Git)
-
+│
 ├── git-project-onboarding/         # Repo onboarding and database models
-
+│
 ├── Git-Repo-Analysis/              # AI analysis and security scanning
-
+│
 ├── NexaTest/                       # Code quality engine
-
+│
 ├── Nexatest--FolderTreeStructure/  # Folder tree generator
-
+│
 └── sql_app.db                      # SQLite database
 
 
@@ -193,3 +193,4 @@ Stores:
 ## Summary
 
 This tool provides a complete automated GitHub repository onboarding and analysis pipeline combining static code analysis, security scanning, AI-based review, repository structure generation, and database storage.
+

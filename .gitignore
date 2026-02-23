@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Environment Variables
+.env
+
+# VS Code
+.vscode/
+
+# Project Specific - Data & Generated Files
+cloned_repos/
+temp_cloned_repos/
+temp_cloned_repos_v2/
+sql_app.db
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# Generated Reports
+final_pipeline_result.json
+*_report.json
+analysis_results/
+
+# Mac OS
+.DS_Store
+
+# Temporary/Backup files
+*_old/
+*.bak

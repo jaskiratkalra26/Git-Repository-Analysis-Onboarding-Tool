@@ -1,0 +1,9 @@
+{
+  "NAMING_CONVENTION": { "enabled": true },
+  "FUNCTION_LENGTH": { "enabled": true, "max_lines": 50 },
+  "DUPLICATE_CODE": { "enabled": true, "min_duplicates": 3 },
+  "PARAMETER_COUNT": { "enabled": true, "max_params": 5 },
+  "DEAD_CODE": { "enabled": true },
+  "COMPLEXITY": { "enabled": true, "max_branches": 10 },
+  "DOCSTRING_MISSING": { "enabled": true }
+}

@@ -117,8 +117,9 @@ Run Pipeline Tests:
 python test_pipeline.py
 
 
-Project Structure
+## Project Structure
 
+```
 GIT-repo-analyzer-extension/
 
 ├── main.py                          # Application entry point
@@ -134,6 +135,7 @@ GIT-repo-analyzer-extension/
 ├── NexaTest/                        # Code quality engine
 ├── Nexatest--FolderTreeStructure/   # Folder tree generator
 └── sql_app.db                       # SQLite database
+```
 
 
 ## Modules Overview
@@ -186,6 +188,7 @@ Stores:
 ## Summary
 
 This tool provides a complete automated GitHub repository onboarding and analysis pipeline combining static code analysis, security scanning, AI-based review, repository structure generation, and database storage.
+
 
 
 

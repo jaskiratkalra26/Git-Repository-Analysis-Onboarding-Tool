@@ -67,6 +67,46 @@ def inspect_db():
     except sqlite3.OperationalError as e:
         print(f"❌ Error querying projects table: {e}")
 
+    # 4. Check Analysis Results
+    print("\n--- Analysis Results Table ---")
+    try:
+        cursor.execute("SELECT count(*) FROM analysis_results")
+        count = cursor.fetchone()[0]
+        print(f"Total Analysis Results: {count}")
+        
+        cursor.execute("SELECT id, project_id, created_at, python_files, analysis_data FROM analysis_results ORDER BY created_at DESC")
+        rows = cursor.fetchall()
+        
+        for row in rows:
+            aid, pid, created, py_files_raw, analysis_raw = row
+            print(f"\n  Analysis ID: {aid}")
+            print(f"  Project ID: {pid}")
+            print(f"  Created At: {created}")
+            
+            try:
+                py_files = json.loads(py_files_raw) if py_files_raw else []
+                print(f"  Python Files Found: {len(py_files)}")
+                # Show first 3 files
+                for f in py_files[:3]:
+                    print(f"    - {f}")
+                if len(py_files) > 3:
+                    print(f"    - ... ({len(py_files)-3} more)")
+            except:
+                print(f"  Python Files raw: {py_files_raw}")
+
+            try:
+                analysis = json.loads(analysis_raw) if analysis_raw else []
+                print(f"  Analysis Entries: {len(analysis)}")
+                if analysis:
+                    print(f"  Sample Analysis Item Keys: {list(analysis[0].keys())}")
+            except:
+                print(f"  Analysis Data raw len: {len(str(analysis_raw))}")
+            print("-" * 30)
+
+    except sqlite3.OperationalError as e:
+        print(f"❌ Error querying analysis_results table: {e}")
+        print("Note: If this table is missing, run the pipeline once to create it.")
+
     conn.close()
 
 if __name__ == "__main__":

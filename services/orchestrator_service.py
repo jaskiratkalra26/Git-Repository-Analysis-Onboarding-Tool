@@ -104,6 +104,10 @@ class OrchestratorService:
                 else:
                     logger.info(f"Existing project metadata found but empty for {repo_name}. Regenerating AI analysis...")
 
+            project_id = None
+            if existing_project:
+                project_id = existing_project.get("id")
+
             if needs_ai_analysis:
                 # 8. AI Analysis (README Parsing)
                 logger.info(f"Generating new AI analysis for {repo_name}...")
@@ -127,6 +131,7 @@ class OrchestratorService:
                          # Construct a dict-like object or use dict directly
                          project_metadata = project_data
                     else:
+                        project_id = new_project.id
                         project_metadata = {
                             "project_name": new_project.project_name,
                             "description": new_project.description,
@@ -135,11 +140,16 @@ class OrchestratorService:
                 else:
                     # Create new record
                     new_project = await self.repository_service.create_project(project_data, repo.id, user.id)
-                    project_metadata = {
-                        "project_name": new_project.project_name,
-                        "description": new_project.description,
-                        "features": new_project.features
-                    }
+                    if new_project:
+                        project_id = new_project.id
+                        project_metadata = {
+                            "project_name": new_project.project_name,
+                            "description": new_project.description,
+                            "features": new_project.features
+                        }
+                    else:
+                        # Fallback if creation fails (should rarely happen)
+                        project_metadata = project_data
 
             # 10. Run Code Analysis (Blocking -> Thread)
             # We run this always to get fresh results on the checked-out code
@@ -154,6 +164,21 @@ class OrchestratorService:
             file_structure = ""
             if repo_path:
                 file_structure = self.scanning_service.get_repository_structure(repo_path, limit_depth=3)
+
+            # 12. Save Analysis Results to DB if Project exists
+            if project_id:
+                try:
+                    logger.info(f"Saving analysis results for Project ID: {project_id}")
+                    await self.repository_service.create_analysis_result(
+                        project_id=project_id,
+                        file_structure=file_structure,
+                        python_files=python_files,  # JSON-serializable list
+                        analysis_data=analysis_results # JSON-serializable list of dicts
+                    )
+                except Exception as db_err:
+                    logger.error(f"Failed to save analysis results to DB: {db_err}")
+            else:
+                logger.warning("Project ID not found. Analysis results were NOT saved to DB.")
 
             return {
                 "project_name": project_metadata.get("project_name"),

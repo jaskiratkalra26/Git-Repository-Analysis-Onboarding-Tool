@@ -10,6 +10,7 @@ try:
     from app.models.repository import Repository
     from app.models.user import User
     from app.models.project import Project
+    from app.models.analysis_result import AnalysisResult
     from app.db.base import Base
 except ImportError:
     logging.error("Failed to import Database models from git-project-onboarding.")
@@ -19,6 +20,7 @@ except ImportError:
     Repository = None
     User = None
     Project = None
+    AnalysisResult = None
     Base = None
 
 logger = logging.getLogger(__name__)
@@ -99,6 +101,7 @@ class RepositoryService:
             project = db.query(Project).filter(Project.repository_id == repo_id).first()
             if project:
                 return {
+                    "id": project.id,
                     "project_name": project.project_name,
                     "description": project.description,
                     "features": project.features,
@@ -143,5 +146,41 @@ class RepositoryService:
             db.commit()
             db.refresh(new_project)
             return new_project
+        except Exception as e:
+            db.rollback()
+            self.log.error(f"Failed to create project: {e}")
+            return None
         finally:
             db.close()
+
+    async def create_analysis_result(self, project_id: int, file_structure: str, python_files: list, analysis_data: list):
+        """Creates a new AnalysisResult record linked to a Project."""
+        db = self.get_db()
+        try:
+            new_result = AnalysisResult(
+                project_id=project_id,
+                file_structure=file_structure,
+                python_files=python_files,
+                analysis_data=analysis_data
+            )
+            db.add(new_result)
+            db.commit()
+            db.refresh(new_result)
+            return new_result
+        except Exception as e:
+            db.rollback()
+            self.log.error(f"Failed to create analysis result: {e}")
+            return None
+        finally:
+            db.close()
+            
+    async def get_latest_analysis_result(self, project_id: int):
+        """Retrieves the most recent analysis result for a project."""
+        db = self.get_db()
+        try:
+            return db.query(AnalysisResult).filter(
+                AnalysisResult.project_id == project_id
+            ).order_by(AnalysisResult.created_at.desc()).first()
+        finally:
+            db.close()
+
